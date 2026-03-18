@@ -239,6 +239,13 @@ def dashboard():
     uid = session['user_id']
     conn = get_db()
     user = conn.execute('SELECT * FROM users WHERE id=?', (uid,)).fetchone()
+
+    if user is None:
+        conn.close()
+        session.clear()
+        flash('Session expired. Please login again.', 'error')
+        return redirect(url_for('login'))
+
     activities = conn.execute('SELECT * FROM activities WHERE user_id=? ORDER BY activity_timestamp DESC LIMIT 10', (uid,)).fetchall()
     login_history = conn.execute('SELECT * FROM login_history WHERE user_id=? ORDER BY id DESC LIMIT 8', (uid,)).fetchall()
     notifications = conn.execute('SELECT * FROM notifications WHERE user_id=? ORDER BY created_at DESC LIMIT 10', (uid,)).fetchall()
@@ -427,42 +434,6 @@ def mark_notifications_read():
     conn.commit()
     conn.close()
     return jsonify({'status': 'ok'})
-
-@app.route('/upload_profile_pic', methods=['POST'])
-def upload_profile_pic():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-
-    uid = session['user_id']
-
-    if 'profile_pic' not in request.files:
-        flash('No file selected!', 'error')
-        return redirect(url_for('dashboard'))
-
-    file = request.files['profile_pic']
-
-    if file.filename == '':
-        flash('No file selected!', 'error')
-        return redirect(url_for('dashboard'))
-
-    filename = secure_filename(f"user_{uid}_{file.filename}")
-    upload_folder = os.path.join('static', 'uploads', 'profiles')
-    os.makedirs(upload_folder, exist_ok=True)
-    file.save(os.path.join(upload_folder, filename))
-
-    conn = get_db()
-    conn.execute('UPDATE users SET profile_pic=? WHERE id=?', (filename, uid))
-    conn.commit()
-    conn.close()
-
-    log_activity(uid, 'Profile Pic Update', 'Profile picture updated')
-    flash('Profile picture updated successfully!', 'success')
-    return redirect(url_for('dashboard'))
-
-# Auto init DB on startup
-os.makedirs(os.path.join('static', 'uploads', 'profiles'), exist_ok=True)
-os.makedirs(os.path.join('static', 'uploads', 'backgrounds'), exist_ok=True)
-init_db()
 
 if __name__ == '__main__':
     os.makedirs(os.path.join('static', 'uploads', 'profiles'), exist_ok=True)
