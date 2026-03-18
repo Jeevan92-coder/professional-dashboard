@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Professional System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Logo -->
+        <div class="logo"></div>
+        
+        <h1>Welcome Back!</h1>
+        <p class="subtitle">Login to your account</p>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Info Box -->
+        <div class="info-box">
+             You can login with Username, Email or Mobile Number
+        </div>
+
+        <!-- Login Form -->
+        <form method="POST" action="/login">
+            
+            <!-- Username/Email/Mobile -->
+            <div class="form-group">
+                <label for="login_identifier">Username / Email / Mobile</label>
+                <input type="text" id="login_identifier" name="login_identifier" 
+                       placeholder="Enter username, email or mobile" required>
+            </div>
+
+            <!-- Password -->
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="password-container">
+                    <input type="password" id="password" name="password" 
+                           placeholder="Enter your password" required>
+                    <button type="button" class="eye-btn" 
+                            onclick="togglePassword()">👁️</button>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="submit-btn">Login </button>
+        </form>
+
+        <!-- Register Link -->
+        <div class="register-link">
+            Don't have an account? <a href="/register">Register here</a>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+</body>
+</html>

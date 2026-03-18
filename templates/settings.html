@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - © Created by Meher Jeevan</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/settings.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="light-mode">
+
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="flash-container">
+            {% for category, message in messages %}
+                <div class="flash-message flash-{{ category }}">
+                    <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-circle' }}"></i>
+                    {{ message }}
+                    <button onclick="this.parentElement.remove()">&times;</button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
+<!-- Top Navigation -->
+<nav class="top-nav">
+    <div class="nav-left">
+        <div class="logo-section">
+            <i class="fas fa-cog"></i>
+            <span>Settings Panel</span>
+        </div>
+    </div>
+    
+    <div class="nav-right">
+        <a href="/dashboard" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+</nav>
+
+<!-- Settings Container -->
+<div class="settings-container">
+    
+    <!-- Settings Header -->
+    <div class="settings-header">
+        <div class="header-content">
+            <h1><i class="fas fa-sliders-h"></i> Settings & Customization</h1>
+            <p>Personalize your dashboard experience with advanced customization options</p>
+        </div>
+    </div>
+    
+    <form method="POST" action="/update_settings" id="settingsForm" enctype="multipart/form-data">
+        
+        <!-- Settings Grid -->
+        <div class="settings-grid">
+            
+            <!-- Language Settings Card -->
+            <div class="settings-card" data-aos="fade-up">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <div>
+                        <h3>Language Preferences</h3>
+                        <p>Choose your preferred language</p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="language-grid">
+                        <label class="language-option">
+                            <input type="radio" name="language" value="en" {% if preferences.language == 'en' %}checked{% endif %}>
+                            <div class="option-card">
+                                <span class="flag">🇬🇧</span>
+                                <span class="lang-name">English</span>
+                            </div>
+                        </label>
+                        
+                        <label class="language-option">
+                            <input type="radio" name="language" value="hi" {% if preferences.language == 'hi' %}checked{% endif %}>
+                            <div class="option-card">
+                                <span class="flag">🇮🇳</span>
+                                <span class="lang-name">हिन्दी</span>
+                            </div>
+                        </label>
+                        
+                        <label class="language-option">
+                            <input type="radio" name="language" value="es" {% if preferences.language == 'es' %}checked{% endif %}>
+                            <div class="option-card">
+                                <span class="flag">🇪🇸</span>
+                                <span class="lang-name">Español</span>
+                            </div>
+                        </label>
+                        
+                        <label class="language-option">
+                            <input type="radio" name="language" value="fr" {% if preferences.language == 'fr' %}checked{% endif %}>
+                            <div class="option-card">
+                                <span class="flag">🇫🇷</span>
+                                <span class="lang-name">Français</span>
+                            </div>
+                        </label>
+                        
+                        <label class="language-option">
+                            <input type="radio" name="language" value="de" {% if preferences.language == 'de' %}checked{% endif %}>
+                            <div class="option-card">
+                                <span class="flag">🇩🇪</span>
+                                <span class="lang-name">Deutsch</span>
+                            </div>
+                        </label>
+                        
+                        <label class="language-option">
+                            <input type="radio" name="language" value="zh" {% if preferences.language == 'zh' %}checked{% endif %}>
+                            <div class="option-card">
+                                <span class="flag">🇨🇳</span>
+                                <span class="lang-name">中文</span>
+                            </div>
+                        </label>
+                        
+                        <label class="language-option">
+                            <input type="radio" name="language" value="ja" {% if preferences.language == 'ja' %}checked{% endif %}>
+                            <div class="option-card">
+                                <span class="flag">🇯🇵</span>
+                                <span class="lang-name">日本語</span>
+                            </div>
+                        </label>
+                        
+                        <label class="language-option">
+                            <input type="radio" name="language" value="ar" {% if preferences.language == 'ar' %}checked{% endif %}>
+                            <div class="option-card">
+                                <span class="flag">🇸🇦</span>
+                                <span class="lang-name">العربية</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Font Style Settings Card -->
+            <div class="settings-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-font"></i>
+                    </div>
+                    <div>
+                        <h3>Font Style Selection</h3>
+                        <p>Choose from 50+ professional fonts</p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="font-selector">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="fontSearch" placeholder="Search fonts..." onkeyup="filterFonts()">
+                        </div>
+                        <div class="font-grid" id="fontGrid">
+                            <label class="font-option" data-font="Inter">
+                                <input type="radio" name="font_style" value="Inter" {% if preferences.font_style == 'Inter' %}checked{% endif %}>
+                                <div class="font-preview" style="font-family: 'Inter';">
+                                    <span class="font-name">Inter</span>
+                                    <span class="font-sample">Aa Bb Cc 123</span>
+                                </div>
+                            </label>
+                            
+                            <label class="font-option" data-font="Roboto">
+                                <input type="radio" name="font_style" value="Roboto" {% if preferences.font_style == 'Roboto' %}checked{% endif %}>
+                                <div class="font-preview" style="font-family: 'Roboto';">
+                                    <span class="font-name">Roboto</span>
+                                    <span class="font-sample">Aa Bb Cc 123</span>
+                                </div>
+                            </label>
+                            
+                            <label class="font-option" data-font="Open Sans">
+                                <input type="radio" name="font_style" value="Open Sans" {% if preferences.font_style == 'Open Sans' %}checked{% endif %}>
+                                <div class="font-preview" style="font-family: 'Open Sans';">
+                                    <span class="font-name">Open Sans</span>
+                                    <span class="font-sample">Aa Bb Cc 123</span>
+                                </div>
+                            </label>
+                            
+                            <label class="font-option" data-font="Lato">
+                                <input type="radio" name="font_style" value="Lato" {% if preferences.font_style == 'Lato' %}checked{% endif %}>
+                                <div class="font-preview" style="font-family: 'Lato';">
+                                    <span class="font-name">Lato</span>
+                                    <span class="font-sample">Aa Bb Cc 123</span>
+                                </div>
+                            </label>
+                            
+                            <label class="font-option" data-font="Montserrat">
+                                <input type="radio" name="font_style" value="Montserrat" {% if preferences.font_style == 'Montserrat' %}checked{% endif %}>
+                                <div class="font-preview" style="font-family: 'Montserrat';">
+                                    <span class="font-name">Montserrat</span>
+                                    <span class="font-sample">Aa Bb Cc 123</span>
+                                </div>
+                            </label>
+                            
+                            <label class="font-option" data-font="Poppins">
+                                <input type="radio" name="font_style" value="Poppins" {% if preferences.font_style == 'Poppins' %}checked{% endif %}>
+                                <div class="font-preview" style="font-family: 'Poppins';">
+                                    <span class="font-name">Poppins</span>
+                                    <span class="font-sample">Aa Bb Cc 123</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Theme Settings Card -->
+            <div class="settings-card full-width" data-aos="fade-up" data-aos-delay="200">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <div>
+                        <h3>Theme Gallery</h3>
+                        <p>Select from 50+ stunning themes</p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="theme-grid" id="themeGrid">
+                        <!-- Theme 1: Ocean Blue -->
+                        <label class="theme-option">
+                            <input type="radio" name="theme" value="ocean-blue" {% if preferences.theme == 'ocean-blue' %}checked{% endif %}>
+                            <div class="theme-card">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    <i class="fas fa-check theme-check"></i>
+                                </div>
+                                <span class="theme-name">Ocean Blue</span>
+                            </div>
+                        </label>
+                        
+                        <!-- Theme 2: Sunset Orange -->
+                        <label class="theme-option">
+                            <input type="radio" name="theme" value="sunset-orange" {% if preferences.theme == 'sunset-orange' %}checked{% endif %}>
+                            <div class="theme-card">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);">
+                                    <i class="fas fa-check theme-check"></i>
+                                </div>
+                                <span class="theme-name">Sunset Orange</span>
+                            </div>
+                        </label>
+                        
+                        <!-- Theme 3: Forest Green -->
+                        <label class="theme-option">
+                            <input type="radio" name="theme" value="forest-green" {% if preferences.theme == 'forest-green' %}checked{% endif %}>
+                            <div class="theme-card">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);">
+                                    <i class="fas fa-check theme-check"></i>
+                                </div>
+                                <span class="theme-name">Forest Green</span>
+                            </div>
+                        </label>
+                        
+                        <!-- Theme 4: Royal Purple -->
+                        <label class="theme-option">
+                            <input type="radio" name="theme" value="royal-purple" {% if preferences.theme == 'royal-purple' %}checked{% endif %}>
+                            <div class="theme-card">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #8e2de2 0%, #4a00e0 100%);">
+                                    <i class="fas fa-check theme-check"></i>
+                                </div>
+                                <span class="theme-name">Royal Purple</span>
+                            </div>
+                        </label>
+                        
+                        <!-- Theme 5: Crimson Red -->
+                        <label class="theme-option">
+                            <input type="radio" name="theme" value="crimson-red" {% if preferences.theme == 'crimson-red' %}checked{% endif %}>
+                            <div class="theme-card">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);">
+                                    <i class="fas fa-check theme-check"></i>
+                                </div>
+                                <span class="theme-name">Crimson Red</span>
+                            </div>
+                        </label>
+                        
+                        <!-- Theme 6: Sky Blue -->
+                        <label class="theme-option">
+                            <input type="radio" name="theme" value="sky-blue" {% if preferences.theme == 'sky-blue' %}checked{% endif %}>
+                            <div class="theme-card">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                                    <i class="fas fa-check theme-check"></i>
+                                </div>
+                                <span class="theme-name">Sky Blue</span>
+                            </div>
+                        </label>
+                        
+                        <!-- Theme 7: Pink Dream -->
+                        <label class="theme-option">
+                            <input type="radio" name="theme" value="pink-dream" {% if preferences.theme == 'pink-dream' %}checked{% endif %}>
+                            <div class="theme-card">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                                    <i class="fas fa-check theme-check"></i>
+                                </div>
+                                <span class="theme-name">Pink Dream</span>
+                            </div>
+                        </label>
+                        
+                        <!-- Theme 8: Golden Hour -->
+                        <label class="theme-option">
+                            <input type="radio" name="theme" value="golden-hour" {% if preferences.theme == 'golden-hour' %}checked{% endif %}>
+                            <div class="theme-card">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);">
+                                    <i class="fas fa-check theme-check"></i>
+                                </div>
+                                <span class="theme-name">Golden Hour</span>
+                            </div>
+                        </label>
+                        
+                        <!-- Add more themes as needed -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Custom Background Settings -->
+            <div class="settings-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-image"></i>
+                    </div>
+                    <div>
+                        <h3>Custom Background</h3>
+                        <p>Upload your own background image</p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="bg-uploader">
+                        <div class="upload-area" onclick="document.getElementById('bgInput').click()">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <h4>Click to upload background</h4>
+                            <p>Supports JPG, PNG (Max 5MB)</p>
+                        </div>
+                        <input type="file" id="bgInput" name="custom_bg" accept="image/*" style="display: none;">
+                        <div class="bg-preview" id="bgPreview" style="{% if preferences.custom_bg %}display: block;{% else %}display: none;{% endif %}">
+                            <img id="bgImage" src="{% if preferences.custom_bg %}{{ url_for('static', filename='uploads/backgrounds/' + preferences.custom_bg) }}{% endif %}" alt="Background Preview">
+                            <button type="button" class="btn-remove-bg" onclick="removeBg()">
+                                <i class="fas fa-times"></i> Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Customer Support Card -->
+            <div class="settings-card" data-aos="fade-up" data-aos-delay="400">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <div>
+                        <h3>Customer Support</h3>
+                        <p>We're here to help 24/7</p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="support-options">
+                        <button type="button" class="support-btn" onclick="openChat()">
+                            <i class="fas fa-comments"></i>
+                            <span>Live Chat</span>
+                        </button>
+                        
+                        <button type="button" class="support-btn" onclick="openEmail()">
+                            <i class="fas fa-envelope"></i>
+                            <span>Email Support</span>
+                        </button>
+                        
+                        <button type="button" class="support-btn" onclick="openTicket()">
+                            <i class="fas fa-ticket-alt"></i>
+                            <span>Submit Ticket</span>
+                        </button>
+                        
+                        <button type="button" class="support-btn" onclick="openFAQ()">
+                            <i class="fas fa-question-circle"></i>
+                            <span>FAQ Center</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Save Settings Button -->
+        <div class="save-section" data-aos="fade-up" data-aos-delay="500">
+            <button type="submit" class="btn-save-settings">
+                <i class="fas fa-save"></i> Save All Settings
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Support Chat Modal -->
+<div id="chatModal" class="support-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-comments"></i> Live Chat Support</h3>
+            <button class="close-modal" onclick="closeChat()">&times;</button>
+        </div>
+        <div class="chat-body">
+            <div class="chat-messages" id="chatMessages">
+                <div class="bot-message">
+                    <div class="message-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        <p>Hello! How can I help you today?</p>
+                        <span class="message-time">Just now</span>
+                    </div>
+                </div>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="chatInput" placeholder="Type your message...">
+                <button type="button" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Import AOS Animation Library -->
+<link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+<script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+
+<!-- Add user message CSS -->
+<style>
+    .user-message {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+        justify-content: flex-end;
+    }
+    
+    .user-message .message-content {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    .user-message .message-avatar {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+    
+    @keyframes slideOutRight {
+        from {
+            transform: translateX(0) rotateY(0deg);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(500px) rotateY(90deg);
+            opacity: 0;
+        }
+    }
+</style>
+
+</body>
+</html>
